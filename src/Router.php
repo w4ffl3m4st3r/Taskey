@@ -10,6 +10,7 @@ class Router
     public function __construct()
     {
     }
+
     public function dispatch(Request $request): Response
     {
         foreach ($this->routes as $route) {
@@ -18,14 +19,16 @@ class Router
                 break;
             }
         }
+
         if (!isset($matchedRoute)) {
-            return new Response("No route matched.", 404, null);
+            return new Response("No route matched", 404, null);
         }
-        return new Response($matchedRoute->return, 200, null);
+
+        return call_user_func($matchedRoute->callback);
     }
 
-    public function addRoute(string $method, string $path, string $return): void
+    public function addRoute(string $method, string $path, callable $callback): void
     {
-        $this->routes[] = new Route($method, $path, $return);
+        $this->routes[] = new Route($method, $path, $callback);
     }
 }
