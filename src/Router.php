@@ -4,24 +4,26 @@ namespace Framework;
 
 class Router
 {
+    private ResponseFactory $responseFactory;
+
     /** @var Route[] */
     public array $routes = [];
 
-    public function __construct()
+    public function __construct(ResponseFactory $responseFactory)
     {
+        $this->responseFactory = $responseFactory;
     }
 
     public function dispatch(Request $request): Response
     {
         foreach ($this->routes as $route) {
-            if ($route->matches($request->method, $request->path)) {
+            if ($route->path === $request->path) {
                 $matchedRoute = $route;
-                break;
             }
         }
 
         if (!isset($matchedRoute)) {
-            return new Response("No route matched", 404, null);
+            return $this->responseFactory->notFound();
         }
 
         return call_user_func($matchedRoute->callback);

@@ -13,8 +13,12 @@ class Kernel
 
     public function __construct()
     {
-        $this->router = new Router();
         $this->container = new ServiceContainer();
+
+        $responseFactory = new ResponseFactory();
+        $this->container->set(ResponseFactory::class, $responseFactory);
+
+        $this->router = new Router($responseFactory);
     }
 
     public function registerRoutes(RouteProviderInterface $provider): void

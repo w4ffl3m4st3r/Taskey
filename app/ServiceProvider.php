@@ -3,7 +3,9 @@
 namespace App;
 
 use App\Controllers\HomeController;
+use App\Controllers\TaskController;
 use Exception;
+use Framework\ResponseFactory;
 use Framework\ServiceContainer;
 use Framework\ServiceProviderInterface;
 
@@ -12,14 +14,14 @@ class ServiceProvider implements ServiceProviderInterface
     /**
      * @throws Exception
      */
-    public function register(ServiceContainer $serviceContainer): void
+    public function register(ServiceContainer $container): void
     {
-        $homeController = new HomeController();
+        $responseFactory = $container->get(ResponseFactory::class);
 
-        try {
-            $serviceContainer->set(HomeController::class, $homeController);
-        } catch (Exception $exception) {
-            echo $exception;
-        }
+        $homeController = new HomeController($responseFactory);
+        $container->set(HomeController::class, $homeController);
+
+        $taskController = new TaskController($responseFactory);
+        $container->set(TaskController::class, $taskController);
     }
 }

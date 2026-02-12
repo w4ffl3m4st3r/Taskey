@@ -13,14 +13,12 @@ class Response
     public function __construct(string $body, int $responseCode, ?string $headers = null)
     {
         $this->body = $body;
-        $this->headers = $headers;
         $this->responseCode = $responseCode;
+        $this->headers = $headers;
     }
 
     public function echo(): void
     {
-        http_response_code($this->responseCode);
-
-        echo $this->body . ' ' . $this->headers;
+        echo $this->body;
     }
 }
