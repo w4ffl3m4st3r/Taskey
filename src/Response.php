@@ -10,15 +10,17 @@ class Response
 
     public ?string $headers;
 
-    public function __construct(string $body, int $responseCode, ?string $headers = null)
+    public function __construct(int $responseCode, string $body, ?string $headers = null)
     {
-        $this->body = $body;
         $this->responseCode = $responseCode;
+        $this->body = $body;
         $this->headers = $headers;
     }
 
     public function echo(): void
     {
-        echo $this->body;
+        http_response_code($this->responseCode);
+
+        echo $this->body . ' ' . $this->headers;
     }
 }

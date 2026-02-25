@@ -2,7 +2,6 @@
 
 namespace Framework;
 
-use App\ServiceProvider;
 use Exception;
 
 class Kernel
@@ -11,13 +10,22 @@ class Kernel
 
     private ServiceContainer $container;
 
-    public function __construct()
+    private ConfigManager $configManager;
+
+    /**
+     * @throws Exception
+     */
+    public function __construct(mixed $config)
     {
+        $this->configManager = new ConfigManager($config);
+
         $this->container = new ServiceContainer();
+        $this->container->set(ResponseFactory::class, new ResponseFactory(
+            $this->configManager->get('DEBUG'),
+            $this->configManager->get('VIEW_PATH')
+        ));
 
-        $responseFactory = new ResponseFactory();
-        $this->container->set(ResponseFactory::class, $responseFactory);
-
+        $responseFactory = $this->container->get(ResponseFactory::class);
         $this->router = new Router($responseFactory);
     }
 
@@ -31,8 +39,15 @@ class Kernel
         $serviceProvider->register($this->container);
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(Request $request): Response
     {
-        return $this->router->dispatch($request);
+        try {
+            return $this->router->dispatch($request);
+        } catch (Exception $e) {
+            throw new Exception('Cannot handle request', 0, $e);
+        }
     }
 }

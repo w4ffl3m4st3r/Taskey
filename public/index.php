@@ -7,7 +7,10 @@ use App\ServiceProvider;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$kernel = new Kernel();
+$kernel = new Kernel([
+    'DEBUG' => true,
+    'VIEW_PATH' => '../app/Views'
+]);
 
 $kernel->registerServices(new ServiceProvider());
 $kernel->registerRoutes(new RouteProvider());
