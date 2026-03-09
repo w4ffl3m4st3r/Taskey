@@ -10,34 +10,35 @@ class ResponseFactory
 {
     private Environment $twig;
 
-    public function __construct(bool $debug, string $path)
+    public function __construct(bool $debugMode, string $viewsPath)
     {
-        $loader = new FilesystemLoader($path);
-        $this->twig = new Environment($loader, [
-            'debug' => $debug,
+        $loader = new FilesystemLoader(__DIR__ . '/../' . $viewsPath);
+        $twig = new Environment($loader, [
+            'debug' => $debugMode,
         ]);
+        if ($debugMode) {
+            $twig->addExtension(new \Twig\Extension\DebugExtension());
+        }
+        $this->twig = $twig;
     }
 
     /**
-     * @param string $template
-     * @param array<string, mixed> $parameters
+     * @param string $view
+     * @param array<mixed> $context
      * @return Response
-     * @throws Exception
      */
-    public function view(string $template, array $parameters = []): Response
+    public function view(string $view, array $context = []): Response
     {
-        $default = [
-            'navigation' => [
-                array('caption' => 'Home', 'href' => '/'),
-                array('caption' => 'About', 'href' => 'about'),
-                array('caption' => 'Tasks', 'href' => 'tasks'),
-            ]
-        ];
+        $response = new Response();
 
         try {
-            return new Response(200, $this->twig->render($template, array_merge($default, $parameters)));
-        } catch (Exception $e) {
-            throw new Exception('Failed to render page ' . $e);
+            $response->responseCode = 200;
+            $response->body = $this->twig->render($view, $context);
+            return $response;
+        } catch (\Exception $e) {
+            $response->responseCode = 500;
+            $response->body = $e->getMessage();
+            return $response;
         }
     }
 
@@ -52,16 +53,37 @@ class ResponseFactory
      */
     public function notFound(): Response
     {
+        $response = new Response();
         try {
-            return new Response(404, $this->twig->render('404.html.twig', [
-                'navigation' => [
-                    array('caption' => 'Home', 'href' => '/'),
-                    array('caption' => 'About', 'href' => 'about'),
-                    array('caption' => 'Tasks', 'href' => 'tasks'),
-                ]
-            ]), null);
-        } catch (Exception $e) {
-            throw new Exception('Failed to render page ' . $e);
+            $response->responseCode = 404;
+            $response->body = $this->twig->render('404.html.twig');
+            return $response;
+        } catch (\Exception $e) {
+            $response->responseCode = 500;
+            $response->body = $e->getMessage();
+            return $response;
         }
+    }
+
+    public function internalError(): Response
+    {
+        $response = new Response();
+        try {
+            $response->responseCode = 500;
+            $response->body = $this->twig->render('500.html.twig');
+            return $response;
+        } catch (\Exception $e) {
+            $response->responseCode = 500;
+            $response->body = $e->getMessage();
+            return $response;
+        }
+    }
+
+    public function redirect(string $url): Response
+    {
+        $response = new Response();
+        $response->responseCode = 302;
+        $response->header = "Location: " . $url;
+        return $response;
     }
 }

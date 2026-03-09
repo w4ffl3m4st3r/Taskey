@@ -35,7 +35,7 @@ class ServiceContainer
     public function get(string $id): object
     {
         if (!isset($this->instances[$id])) {
-            throw new Exception("Service '{$id}' does not exist.");
+            throw new Exception("Target binding [$id] does not exist.");
         }
 
         /** @var T */

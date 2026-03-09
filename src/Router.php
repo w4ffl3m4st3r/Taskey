@@ -6,7 +6,6 @@ use Exception;
 
 class Router
 {
-
     /** @var Route[] */
     public array $routes = [];
 
@@ -24,8 +23,10 @@ class Router
     {
         foreach ($this->routes as $route) {
             if ($route->matches($request->method, $request->path)) {
+                $callback = $route->callback;
                 $request->routeParameters = $route->routeParameters;
-                return ($route->callback)($request);
+                $response = $callback($request);
+                return $response;
             }
         }
 
@@ -34,6 +35,7 @@ class Router
 
     public function addRoute(string $method, string $path, callable $callback): void
     {
-        $this->routes[] = new Route($method, $path, $callback);
+        $route = new Route($method, $path, $callback);
+        $this->routes[] = $route;
     }
 }

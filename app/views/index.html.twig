@@ -3,5 +3,24 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold mb-6">Welcome to Taskey!</h1>
+    <div class="space-y-6">
+
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Welcome to Taskey!</h1>
+
+        <p class="text-slate-600 dark:text-slate-400">
+            Start by creating a new task or view your existing tasks.
+        </p>
+
+        <a href="/tasks/create"
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition">
+            + Create New Task
+        </a>
+
+        <ul class="list-disc list-inside text-slate-700 dark:text-slate-300 space-y-1">
+            <li>Organize your tasks easily</li>
+            <li>Track progress and priorities</li>
+            <li>Mark tasks as completed</li>
+        </ul>
+
+    </div>
 {% endblock %}

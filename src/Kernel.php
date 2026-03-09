@@ -2,8 +2,6 @@
 
 namespace Framework;
 
-use Exception;
-
 class Kernel
 {
     private Router $router;
@@ -13,25 +11,29 @@ class Kernel
     private ConfigManager $configManager;
 
     /**
-     * @throws Exception
+     * @param string[] $config
+     * @throws \Exception
      */
-    public function __construct(mixed $config)
+    public function __construct(array $config)
     {
-        $this->configManager = new ConfigManager($config);
-
         $this->container = new ServiceContainer();
-        $this->container->set(ResponseFactory::class, new ResponseFactory(
-            $this->configManager->get('DEBUG'),
-            $this->configManager->get('VIEW_PATH')
-        ));
 
-        $responseFactory = $this->container->get(ResponseFactory::class);
+        $this->configManager = new ConfigManager($config);
+        $debugMode = $this->configManager->get('APP_ENV') != 'production';
+        $viewsPath = $this->configManager->get('VIEWS_PATH');
+        $responseFactory = new ResponseFactory($debugMode, $viewsPath);
+        $this->container->set(ResponseFactory::class, $responseFactory);
+
+        $dbName = $this->configManager->get('APP_DB');
+        $database = new Database(__DIR__ . '/../' . $dbName);
+        $this->container->set(Database::class, $database);
+
         $this->router = new Router($responseFactory);
     }
 
-    public function registerRoutes(RouteProviderInterface $provider): void
+    public function registerRoutes(RouteProviderInterface $routerProvider): void
     {
-        $provider->register($this->router, $this->container);
+        $routerProvider->register($this->router, $this->container);
     }
 
     public function registerServices(ServiceProviderInterface $serviceProvider): void
@@ -40,14 +42,18 @@ class Kernel
     }
 
     /**
-     * @throws Exception
+     * Handle the incoming Request and produce a Response.
+     *
+     * @param Request $request
+     * @return Response
      */
     public function handle(Request $request): Response
     {
-        try {
-            return $this->router->dispatch($request);
-        } catch (Exception $e) {
-            throw new Exception('Cannot handle request', 0, $e);
-        }
+        return $this->router->dispatch($request);
+    }
+
+    public function getDatabase(): Database
+    {
+        return $this->container->get(Database::class);
     }
 }

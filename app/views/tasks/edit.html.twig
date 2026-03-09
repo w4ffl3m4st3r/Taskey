@@ -1,22 +1,30 @@
 {% extends "layouts/taskBase.html.twig" %}
 
-{% block title %}Create{% endblock %}
+{% block title %}Edit{% endblock %}
 
 {% block content %}
-    <form method="POST" action="/tasks">
+    <form method="POST" action="/tasks/{{ task.id }}/edit">
 
         <div class="space-y-6">
 
             <!-- Header -->
-            <div>
-                <a href="/tasks"
-                   class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition">
-                    ← Back to tasks
-                </a>
+            <div class="flex items-center justify-between">
 
-                <h1 class="text-2xl font-semibold text-slate-900 dark:text-white mt-1">
-                    Create Task
-                </h1>
+                <div>
+                    <a href="/tasks/{{ task.id }}"
+                       class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition">
+                        ← Back to task
+                    </a>
+
+                    <h1 class="text-2xl font-semibold text-slate-900 dark:text-white mt-1">
+                        Edit Task
+                    </h1>
+
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        Task #{{ task.id }}
+                    </p>
+                </div>
+
             </div>
 
 
@@ -103,6 +111,10 @@
 
                             {% endfor %}
 
+                            {% if errors.priority %}
+                                <div class="text-red-500 text-sm">{{ errors.priority }}</div>
+                            {% endif %}
+
                         </div>
 
                     </div>
@@ -133,12 +145,44 @@
 
                             </select>
 
+                            {% if errors.status %}
+                                <div class="text-red-500 text-sm mt-1">{{ errors.status }}</div>
+                            {% endif %}
+
                         </div>
 
                     </div>
 
 
-                    <!-- Date Started -->
+                    <!-- Progress -->
+                    <div class="grid grid-cols-4 px-6 py-4 items-center">
+
+                        <label for="progress" class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                            Progress
+                        </label>
+
+                        <div class="col-span-3">
+
+                            <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    id="progress"
+                                    name="progress"
+                                    value="{{ task.progress }}"
+                                    class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg accent-blue-500"
+                            >
+
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                {{ task.progress }}%
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Created -->
                     <div class="grid grid-cols-4 px-6 py-4 items-center">
 
                         <label for="created_at" class="text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -151,6 +195,7 @@
                                     type="date"
                                     id="created_at"
                                     name="created_at"
+                                    value="{{ task.createdAt|date('Y-m-d') }}"
                                     class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#161b22] rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
 
@@ -159,7 +204,7 @@
                     </div>
 
 
-                    <!-- Date Completed -->
+                    <!-- Completed -->
                     <div class="grid grid-cols-4 px-6 py-4 items-center">
 
                         <label for="completed_at" class="text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -172,6 +217,7 @@
                                     type="date"
                                     id="completed_at"
                                     name="completed_at"
+                                    {% if task.completedAt %}value="{{ task.completedAt|date('Y-m-d') }}"{% endif %}
                                     class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#161b22] rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
 
@@ -183,13 +229,20 @@
 
 
                 <!-- Buttons -->
-                <div class="px-6 py-4 flex justify-end">
+                <div class="px-6 py-4 flex justify-between">
+
+                    <a
+                            href="/tasks/{{ task.id }}/delete"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+                    >
+                        Delete Task
+                    </a>
 
                     <button
                             type="submit"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition"
                     >
-                        Create Task
+                        Save Changes
                     </button>
 
                 </div>

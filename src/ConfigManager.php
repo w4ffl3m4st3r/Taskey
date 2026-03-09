@@ -6,34 +6,38 @@ use Exception;
 
 class ConfigManager
 {
-    /** @var mixed */
-    public mixed $config;
+    /** @var string[] */
+    private array $defaults = array(
+        'APP_ENV' => 'production'
+    );
 
-    private readonly mixed $defaults;
+    /** @var string[] */
+    public array $config = array();
 
     /**
-     * @param mixed $config
+     * @param string[] $config
      */
-    public function __construct(mixed $config)
+    public function __construct(array $config = array())
     {
-        $this->defaults = [
-            'APP_NAME' => 'TASKEY',
-            'DEBUG' => true
-        ];
-        $this->config = array_merge($config, $this->defaults);
+        $this->config = array_merge($this->defaults, $config);
     }
 
     /**
-     * @param string $id
-     * @return mixed
      * @throws Exception
      */
-    public function get(string $id): mixed
+    public function get(string $key): string
     {
-        if (!isset($this->config[$id])) {
-            throw new Exception('Trying to get a config value but does not exist');
+        if (!isset($this->config[$key])) {
+            throw new Exception('Config item: ' . $key . ' not set');
         }
+        return $this->config[$key];
+    }
 
-        return $this->config[$id];
+    /**
+     * @throws Exception
+     */
+    public function isProduction(): bool
+    {
+        return (strtoupper($this->get('APP_ENV')) === 'PRODUCTION');
     }
 }

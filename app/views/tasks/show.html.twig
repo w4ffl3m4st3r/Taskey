@@ -1,12 +1,133 @@
-{% extends "layouts/base.html.twig" %}
+{% extends "layouts/taskBase.html.twig" %}
 
-{% block title %}Task {{ id ?? '?' }}{% endblock %}
+{% block title %}Task {{ task.id }}{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold mb-6">Task {{ task.id }}: {{ task.title }}</h1>
+    <div class="space-y-6">
 
-    <p>{{ task.description }}</p>
-    <p>Priority: {{ task.priority }}</p>
-    <p>Status: {{ task.status }}</p>
-    <p>Progress: {{ task.progress }}%</p>
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+
+            <div>
+                <a href="/tasks"
+                   class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition">
+                    ← Back to tasks
+                </a>
+
+                <h1 class="text-2xl font-semibold text-slate-900 dark:text-white mt-1">
+                    {{ task.title }}
+                </h1>
+
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Task #{{ task.id }}
+                </p>
+            </div>
+
+            <a href="/tasks/{{ task.id }}/edit"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition">
+                Edit Task
+            </a>
+
+        </div>
+
+        <!-- Task Card -->
+        <div class="bg-white dark:bg-[#0d1117] rounded-xl shadow-sm border border-slate-200 dark:border-[#30363d] overflow-hidden">
+
+            <div class="divide-y divide-slate-200 dark:divide-[#30363d]">
+
+                <!-- Description -->
+                <div class="grid grid-cols-4 px-6 py-4">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Description
+                    </div>
+
+                    <div class="col-span-3 text-slate-900 dark:text-slate-100 break-words">
+                        {{ task.description ?: 'No description provided.' }}
+                    </div>
+                </div>
+
+                <!-- Priority -->
+                <div class="grid grid-cols-4 px-6 py-4 items-center">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Priority
+                    </div>
+
+                    <div class="col-span-3">
+                    <span class="px-2 py-1 text-xs rounded-md
+                        bg-{{ priorityColours[task.priority] }}/20
+                        text-{{ priorityColours[task.priority] }}
+                        font-medium capitalize">
+                        {{ priorities[task.priority] }}
+                    </span>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="grid grid-cols-4 px-6 py-4 items-center">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Status
+                    </div>
+
+                    <div class="col-span-3">
+                    <span class="px-2 py-1 text-xs rounded-md
+                        bg-{{ statusColours[task.status] }}/20
+                        text-{{ statusColours[task.status] }}
+                        font-medium capitalize">
+                        {{ statuses[task.status] }}
+                    </span>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div class="grid grid-cols-4 px-6 py-4 items-center">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Progress
+                    </div>
+
+                    <div class="col-span-3">
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                            <div class="bg-blue-500 h-3 rounded-full transition-all"
+                                 style="width: {{ task.progress }}%">
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            {{ task.progress }}%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Created -->
+                <div class="grid grid-cols-4 px-6 py-4">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Created
+                    </div>
+
+                    <div class="col-span-3 text-slate-900 dark:text-slate-100">
+                        {{ task.createdAt|date("d M Y") }}
+                    </div>
+                </div>
+
+                <!-- Completed -->
+                <div class="grid grid-cols-4 px-6 py-4">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Completed
+                    </div>
+
+                    <div class="col-span-3 text-slate-900 dark:text-slate-100">
+                        {% if task.completedAt %}
+                            {{ task.completedAt|date("d M Y") }}
+                        {% else %}
+                            <span class="text-slate-500 dark:text-slate-400">
+                            Not completed yet
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 {% endblock %}

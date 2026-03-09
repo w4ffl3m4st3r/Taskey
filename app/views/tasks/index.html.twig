@@ -1,45 +1,89 @@
-{% extends "layouts/base.html.twig" %}
+{% extends "layouts/taskBase.html.twig" %}
 
 {% block title %}Tasks{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold mb-8">Tasks</h1>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {%  for task in tasks %}
-            <a href="/tasks/{{ task.id }}"
-               class="block bg-white dark:bg-[#0d1117] rounded-xl shadow-sm
-                hover:shadow-md dark:hover:shadow-white/10 transition p-6 border border-slate-200 dark:border-[#30363d]">
+    <div class="space-y-6">
 
-                <div class="flex justify-between items-start mb-3">
-                    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ task.title }}</h2>
-
-                    <span class="text-cs px-2 py-1 rounded-full
-                        {%  if task.status == 4 %}
-                            bg-green-100 text-green-700
-                        {%  elseif task.status == 3 %}
-                            bg-yellow-100 text-yellow-700
-                        {%  else %}
-                            bg-gray-100 text-gray-600
-                        {% endif %}
-                    ">
-                        Status {{ task.status }}
-                    </span>
-                </div>
-
-                <p class="text-sm text-slate-700 dark:text-slate-300 line-clamp-2 mb-4">
-                    {{ task.description }}
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">
+                    Tasks
+                </h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Manage and track all your tasks
                 </p>
+            </div>
 
-                <div>
-                    <div class="w-full bg-gray-200 dark:bg-[#30363d] rounded-full h-2">
-                        <div class="bg-blue-500 h-2 rounded-full"
-                             style="width: {{ task.progress }}%"></div>
-                    </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ task.progress }}% complete</p>
-                </div>
-
+            <a href="/tasks/create"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition">
+                + Create Task
             </a>
-        {% endfor %}
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white dark:bg-[#0d1117] rounded-xl shadow-sm border border-slate-200 dark:border-[#30363d] overflow-hidden">
+
+            <table class="w-full text-sm">
+
+                <thead class="bg-slate-50 dark:bg-[#161b22] text-slate-600 dark:text-slate-400 uppercase text-xs tracking-wider">
+                <tr>
+                    <th class="px-6 py-4 text-left">Title</th>
+                    <th class="px-6 py-4 text-left">Priority</th>
+                    <th class="px-6 py-4 text-left">Status</th>
+                    <th class="px-6 py-4 text-right">Action</th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-200 dark:divide-[#30363d]">
+
+                {% for task in tasks %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-[#161b22] transition">
+
+                        <!-- Title -->
+                        <td class="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">
+                            {{ task.title }}
+                        </td>
+
+                        <!-- Priority -->
+                        <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs rounded-md
+                            bg-{{ priorityColours[task.priority] }}/20
+                            text-{{ priorityColours[task.priority] }}
+                            font-medium capitalize">
+                            {{ priorities[task.priority] }}
+                        </span>
+                        </td>
+
+                        <!-- Status -->
+                        <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs rounded-md
+                            bg-{{ statusColours[task.status] }}/20
+                            text-{{ statusColours[task.status] }}
+                            font-medium capitalize">
+                            {{ statuses[task.status] }}
+                        </span>
+                        </td>
+
+                        <!-- Action -->
+                        <td class="px-6 py-4 text-right">
+                            <a href="/tasks/{{ task.id }}"
+                               class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm transition">
+                                View →
+                            </a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
+
 {% endblock %}

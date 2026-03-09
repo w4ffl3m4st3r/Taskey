@@ -1,0 +1,33 @@
+{% extends "layouts/base.html.twig" %}
+
+{% set pageTitle = "Tasks" %}
+
+{% set priorities = {
+    0: 'low',
+    1: 'moderate',
+    2: 'high',
+    3: 'urgent'
+} %}
+
+{% set priorityColours = {
+    0: 'gray-500',
+    1: 'blue-500',
+    2: 'yellow-400',
+    3: 'red-500'
+} %}
+
+    {% set statuses = {
+        0: 'new',
+        1: 'deferred',
+        2: 'in progress',
+        3: 'cancelled',
+        4: 'completed'
+    } %}
+
+{% set statusColours = {
+    0: 'gray-500',
+    1: 'yellow-400',
+    2: 'blue-500',
+    3: 'red-500',
+    4: 'green-500'
+} %}
